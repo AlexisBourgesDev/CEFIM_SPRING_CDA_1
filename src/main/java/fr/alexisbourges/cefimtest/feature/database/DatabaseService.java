@@ -24,10 +24,13 @@ public class DatabaseService {
         List<String> resultList1 = (List<String>) nativeQuery2.getResultList();
 
         return collect;
-        // TODO
     }
 
     public List<ProduitDto> getListProduct(){
-        return null;
+        String request = "select product_id, name, description from produit";
+        Query query = entityManager.createNativeQuery(request, Tuple.class);
+        List<Tuple> resultList = query.getResultList();
+        List<ProduitDto> collect = resultList.stream().map(ProduitDto::new).toList();
+        return collect;
     }
 }

@@ -1,6 +1,7 @@
 package fr.alexisbourges.cefimtest;
 
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
+import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,16 @@ class CefimtestApplicationTests {
 		List<String> listProductNames = databaseService.getListProductNames();
 
 		assert listProductNames.containsAll(expectedNames);
+	}
+
+	@Test
+	void testProductList(){
+		ProduitDto p1 = new ProduitDto(1, "iphone", "portable");
+		ProduitDto p2 = new ProduitDto(2, "PS5", "console");
+
+		List<ProduitDto> listProduits = databaseService.getListProduct();
+
+		assert listProduits.containsAll(Arrays.asList(p1, p2));
 	}
 
 
