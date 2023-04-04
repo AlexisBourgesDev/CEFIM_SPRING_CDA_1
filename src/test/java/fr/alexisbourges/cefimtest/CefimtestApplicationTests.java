@@ -2,6 +2,7 @@ package fr.alexisbourges.cefimtest;
 
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
 import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
+import fr.alexisbourges.cefimtest.feature.database.ProduitWithPriceDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,11 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,7 +68,7 @@ class CefimtestApplicationTests {
 		// DTO -> Data Transfert Object => Objet utilisé pour transférer des données entre différentes parties de l'application
 		// Il s'agit juste d'un suffixe pour préciser qu'il ne s'agit pas d'une classe métier ou d'une entité ...
 		ProduitDto p1 = new ProduitDto(1, "iphone", "portable");
-		ProduitDto p2 = new ProduitDto(2, "PS5", "console");
+		ProduitDto p2 = new ProduitDto(2, "PS5", null);
 
 		// Récupération de notre liste de produits
 		List<ProduitDto> listProduits = databaseService.getListProduct();
@@ -73,6 +77,22 @@ class CefimtestApplicationTests {
 		// Pour que cela fonctionne, bien penser à redéfinir la méthode equals() et hashcode()
 		// Ici, puisque ce sont des comparaisons d'objets, ce sera la méthode equals() qui sera utilisé
 		assert listProduits.containsAll(Arrays.asList(p1, p2));
+	}
+
+	@Test
+	void testProductListPrices(){
+		Map<Integer, BigDecimal> listPrices2 = new HashMap<>();
+		listPrices2.put(1, BigDecimal.valueOf(1000.0));
+
+
+		// Récupération de notre liste de produits
+		List<ProduitWithPriceDto> listProduits = databaseService.getListProductWithPrices();
+
+		assert listProduits.stream()
+				.filter(produit -> listPrices2.containsKey(produit.getId()))
+				.allMatch(produit ->
+						produit.getUnitPrice().equals(listPrices2.get(produit.getId()))
+				);
 	}
 
 
