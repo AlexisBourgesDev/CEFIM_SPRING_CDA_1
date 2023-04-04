@@ -81,17 +81,29 @@ class CefimtestApplicationTests {
 
 	@Test
 	void testProductListPrices(){
-		Map<Integer, BigDecimal> listPrices2 = new HashMap<>();
-		listPrices2.put(1, BigDecimal.valueOf(1000.0));
+		// Création d'une Map (clé - valeur) avec en clé l'ID de la base de données et en valeur son prix associé
+		// Attention : penser à passer un double et pas un long à la classe BigDecimal pour les tests
+		Map<Integer, BigDecimal> listPrices = new HashMap<>();
+		listPrices.put(1, BigDecimal.valueOf(1000.0));
+
+		// Autre écriture d'une Map (changement de contexte : à l'intérieur des {{ }}, this devient la Map)
+		Map<Integer, BigDecimal> listPricesBis = new HashMap<>(){{
+			put(1, BigDecimal.valueOf(1000.0));
+		}};
 
 
-		// Récupération de notre liste de produits
+
+		// Récupération de notre liste de produits avec le prix
 		List<ProduitWithPriceDto> listProduits = databaseService.getListProductWithPrices();
 
 		assert listProduits.stream()
-				.filter(produit -> listPrices2.containsKey(produit.getId()))
+				// Filtre notre liste de produits avec seulement ceux qui sont contenus dans notre Map de test
+				// la fonction filter attend un boolean après "->"
+				.filter(produit -> listPrices.containsKey(produit.getId()))
+				// Méthode qui permet de faire une vérification de tous les éléments de notre liste
+				// Si un seul élément retourne un false à notre condition, allMatch renvoie false
 				.allMatch(produit ->
-						produit.getUnitPrice().equals(listPrices2.get(produit.getId()))
+						produit.getUnitPrice().equals(listPrices.get(produit.getId()))
 				);
 	}
 

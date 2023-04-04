@@ -52,12 +52,11 @@ public class DatabaseService {
     }
 
     public List<ProduitWithPriceDto> getListProductWithPrices(){
-        // IDEM que pour les noms
+        // Requete identique à notre méthode getListProduct, avec le champ unit_price en plus
         String request = "select product_id, name, description, unit_price from produit";
         Query query = entityManager.createNativeQuery(request, Tuple.class);
         List<Tuple> resultList = query.getResultList();
-        // La seule différence est qu'au lieu de transformer notre Tuple en String, on le transforme dans notre classe de données ProduitDto
-        // La notation "ProduitDto::new" est identique à "tuple -> new ProduitDto(tuple)" dans la méthode map()
+        // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
         List<ProduitWithPriceDto> collect = resultList.stream().map(ProduitWithPriceDto::new).toList();
         return collect;
     }
