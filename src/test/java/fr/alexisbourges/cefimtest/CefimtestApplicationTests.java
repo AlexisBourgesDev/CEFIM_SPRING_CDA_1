@@ -112,11 +112,14 @@ class CefimtestApplicationTests {
 
 	@Test
 	void testProduitFromEntity(){
+		// Création de nos tests
 		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
 		ProduitWithPriceDto p2 = new ProduitWithPriceDto(2, "PS5", null, BigDecimal.valueOf(500.0));
 
+		// Récupération de ma liste de produit via mes entity
 		List<Produit> listProductFromEntity = databaseService.getListProductFromEntity();
 
+		// Test
 		assert listProductFromEntity.stream().allMatch(produit -> testEquality(produit, p1) || testEquality(produit, p2));
 	}
 

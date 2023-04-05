@@ -65,6 +65,7 @@ public class DatabaseService {
     }
 
     public List<Produit> getListProductFromEntity(){
+        // Utilisation du repository pour récupérer toutes les lignes de la BDD
         return productRepository.findAll();
     }
 }
