@@ -16,6 +16,9 @@ public class DatabaseService {
     // On injecte notre EntityManager pour pouvoir faire nos requêtes
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private ProductRepository productRepository;
+
     public List<String> getListProductNames(){
         // On commence par écrire notre requête (penser à l'executer directement dans une console
         // ou dans phpMyAdmin pour éviter les problèmes de requête très verbeux
@@ -59,5 +62,9 @@ public class DatabaseService {
         // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
         List<ProduitWithPriceDto> collect = resultList.stream().map(ProduitWithPriceDto::new).toList();
         return collect;
+    }
+
+    public List<Produit> getListProductFromEntity(){
+        return productRepository.findAll();
     }
 }

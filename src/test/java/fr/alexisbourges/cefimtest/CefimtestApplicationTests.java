@@ -1,6 +1,7 @@
 package fr.alexisbourges.cefimtest;
 
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
+import fr.alexisbourges.cefimtest.feature.database.Produit;
 import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
 import fr.alexisbourges.cefimtest.feature.database.ProduitWithPriceDto;
 import jakarta.persistence.EntityManager;
@@ -19,10 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -105,6 +103,21 @@ class CefimtestApplicationTests {
 				.allMatch(produit ->
 						produit.getUnitPrice().equals(listPrices.get(produit.getId()))
 				);
+	}
+
+	boolean testEquality(Produit produitEntity, ProduitWithPriceDto produitWithPriceDto){
+		return Objects.equals(produitEntity.getName(), produitWithPriceDto.getName()) && Objects.equals(produitEntity.getDescription(), produitWithPriceDto.getDescription())
+				&& Objects.equals(BigDecimal.valueOf(produitEntity.getUnitPrice()), produitWithPriceDto.getUnitPrice());
+	}
+
+	@Test
+	void testProduitFromEntity(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+		ProduitWithPriceDto p2 = new ProduitWithPriceDto(2, "PS5", null, BigDecimal.valueOf(500.0));
+
+		List<Produit> listProductFromEntity = databaseService.getListProductFromEntity();
+
+		assert listProductFromEntity.stream().allMatch(produit -> testEquality(produit, p1) || testEquality(produit, p2));
 	}
 
 
