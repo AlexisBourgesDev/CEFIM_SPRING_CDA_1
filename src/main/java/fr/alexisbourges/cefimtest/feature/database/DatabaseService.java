@@ -72,13 +72,19 @@ public class DatabaseService {
     public ProduitWithPriceDto getOneProduct(Integer id) {
         // Requete identique à notre méthode getListProduct, avec le champ unit_price en plus
         String request = "select product_id, name, description, unit_price from produit where product_id = :productId";
-        Query query = entityManager.createNativeQuery(request, Tuple.class).setParameter("productId", id);
+        Query query = entityManager.createNativeQuery(request, Tuple.class)
+                // setParameter : Permet de remplacer un paramètre nommé (1er paramètre) dans la requête par la valeur du 2e paramètre (Ici productId)
+                // Dans ma requête, un paramètre est identifié par le prefix ":"
+                .setParameter("productId", id);
         Tuple result = (Tuple) query.getSingleResult();
         // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
         return new ProduitWithPriceDto(result);
     }
 
     public Produit getOneProductEntity(Integer id) {
+        // 2 façons de récupérer un élément par son ID
+        // findById : renvoie un optionnel pour gérer le cas où l'element n'existe pas (ici on renvoie null)
+        // getReferenceById : renvoie le produit et lève une exception dans le cas où il n'existe pas
         return productRepository.findById(id).orElse(null);
     }
 }
