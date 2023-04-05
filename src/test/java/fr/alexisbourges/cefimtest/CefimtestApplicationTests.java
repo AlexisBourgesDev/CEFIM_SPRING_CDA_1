@@ -123,6 +123,24 @@ class CefimtestApplicationTests {
 		assert listProductFromEntity.stream().allMatch(produit -> testEquality(produit, p1) || testEquality(produit, p2));
 	}
 
+	@Test
+	void testGetIphone(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+
+		ProduitWithPriceDto oneProduct = databaseService.getOneProduct(p1.getId());
+
+		assert oneProduct.equals(p1);
+	}
+
+	@Test
+	void testGetIphoneFromEntity(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+
+		Produit oneProduct = databaseService.getOneProductEntity(p1.getId());
+
+		assert testEquality(oneProduct, p1);
+	}
+
 
 	@Test
 	void contextLoads() {

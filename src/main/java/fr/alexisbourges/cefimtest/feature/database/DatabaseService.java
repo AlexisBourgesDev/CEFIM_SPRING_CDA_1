@@ -68,4 +68,17 @@ public class DatabaseService {
         // Utilisation du repository pour récupérer toutes les lignes de la BDD
         return productRepository.findAll();
     }
+
+    public ProduitWithPriceDto getOneProduct(Integer id) {
+        // Requete identique à notre méthode getListProduct, avec le champ unit_price en plus
+        String request = "select product_id, name, description, unit_price from produit where product_id = :productId";
+        Query query = entityManager.createNativeQuery(request, Tuple.class).setParameter("productId", id);
+        Tuple result = (Tuple) query.getSingleResult();
+        // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
+        return new ProduitWithPriceDto(result);
+    }
+
+    public Produit getOneProductEntity(Integer id) {
+        return productRepository.findById(id).orElse(null);
+    }
 }
