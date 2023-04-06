@@ -16,7 +16,7 @@ public class Produit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private int productId;
+    private Integer productId;
 
     // @Column : Permet de mapper l'attribut à son champ en BDD
     @Column(name = "name")
@@ -26,10 +26,14 @@ public class Produit {
     private String description;
 
     @Column(name = "unitPrice")
-    private double unitPrice;
+    private Double unitPrice;
 
     @Column(name = "category_id")
-    private int categoryId;
+    private Integer categoryId;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", updatable = false, insertable = false)
+    private Category category;
 
     public String getName() {
         return name;
@@ -53,5 +57,8 @@ public class Produit {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public Produit() {
     }
 }

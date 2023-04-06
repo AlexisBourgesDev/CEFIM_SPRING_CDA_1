@@ -25,6 +25,6 @@ public interface ProductRepository extends JpaRepository<Produit, Integer> {
     // Utilisation d'une requête écrite en JPQL, et pas en SQL natif
     // On remplace juste le nom des tables par le nom des classe contenant nos entités
     // On remplace le nom des champs de notre BDD par le nom des attributs
-    @Query("select p from Produit p inner join Category c on p.categoryId = c.categoryId where c.categoryName = ?1")
+    @Query("select p from Produit p where p.category.categoryName = ?1")
     List<Produit> findByCategoryName(String categoryName);
 }

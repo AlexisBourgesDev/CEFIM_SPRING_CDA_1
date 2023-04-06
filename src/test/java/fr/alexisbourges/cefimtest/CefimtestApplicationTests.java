@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
@@ -179,6 +180,43 @@ class CefimtestApplicationTests {
 		Produit oneProduct = databaseService.getOneProductEntity(p1.getId());
 
 		assert testEquality(oneProduct, p1);
+	}
+
+	// CRUD
+
+	@Test
+	void testInsertProduit() throws Exception {
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(null, "table", "table basique", BigDecimal.valueOf(100.0));
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/product").content("{\"name\": \"table\",\n" +
+				"\"description\" : \"table basique\",\n" +
+				"\"unitPrice\": 100.0,\n" +
+				"\"categoryId\": 3}").contentType(MediaType.APPLICATION_JSON);
+
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+		//JsonPathResultMatchers resultNameProduct = MockMvcResultMatchers.jsonPath("$.name", "table");
+
+		mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus);
+				//.andExpect(resultNameProduct);
+	}
+
+	@Test
+	void testDeleteProduct() throws Exception{
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/product/5");
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+
+		mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus);
+	}
+
+	@Test
+	void testDeleteProductByName() throws Exception{
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/product?productName=table");
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+
+		mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus);
 	}
 
 
