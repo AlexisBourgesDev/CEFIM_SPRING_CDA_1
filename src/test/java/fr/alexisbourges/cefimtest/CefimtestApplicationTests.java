@@ -1,11 +1,17 @@
 package fr.alexisbourges.cefimtest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
+import fr.alexisbourges.cefimtest.feature.rayon.RayonService;
 import fr.alexisbourges.cefimtest.model.Produit;
 import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
 import fr.alexisbourges.cefimtest.feature.database.ProduitWithPriceDto;
+import fr.alexisbourges.cefimtest.model.Rayon;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +31,7 @@ import java.util.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class CefimtestApplicationTests {
 
 	// Auto instanciation via @Autowired
@@ -36,6 +43,8 @@ class CefimtestApplicationTests {
 	// Classe de Service
 	@Autowired
 	private DatabaseService databaseService;
+	@Autowired
+	private RayonService rayonService;
 
 	// LOGGER pour écrire des logs (bien prendre le package slf4j)
 	private Logger logger = LoggerFactory.getLogger(CefimtestApplicationTests.class);
@@ -194,11 +203,17 @@ class CefimtestApplicationTests {
 				"\"categoryId\": 3}").contentType(MediaType.APPLICATION_JSON);
 
 		ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
-		//JsonPathResultMatchers resultNameProduct = MockMvcResultMatchers.jsonPath("$.name", "table");
 
-		mockMvc.perform(requestBuilder)
-				.andExpect(resultStatus);
-				//.andExpect(resultNameProduct);
+		ResultMatcher resultNameProduct = MockMvcResultMatchers.content().json(new ObjectMapper().writeValueAsString(p1));
+
+
+		JsonNode contentResponse = new ObjectMapper().readTree(mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus)
+				.andReturn().getResponse().getContentAsString());
+
+
+		Assertions.assertEquals("table2", contentResponse.get("name").asText());
+
 	}
 
 	@Test
@@ -217,6 +232,11 @@ class CefimtestApplicationTests {
 
 		mockMvc.perform(requestBuilder)
 				.andExpect(resultStatus);
+	}
+
+	@Test
+	void testRayonInsert() throws Exception{
+		rayonService.saveRayon(new Rayon("Fruits"));
 	}
 
 

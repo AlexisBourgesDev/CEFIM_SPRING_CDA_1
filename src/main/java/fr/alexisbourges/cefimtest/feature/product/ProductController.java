@@ -21,7 +21,7 @@ public class ProductController {
         return productService.insertNewProduct(produit);
     }
 
-    @DeleteMapping("/:productId")
+    @DeleteMapping("/{productId}")
     public void deleteNewProduct(@PathVariable("productId") Integer productId){
         productService.deleteProduct(productId);
     }
