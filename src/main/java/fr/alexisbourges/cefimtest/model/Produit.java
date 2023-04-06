@@ -1,4 +1,4 @@
-package fr.alexisbourges.cefimtest.feature.database;
+package fr.alexisbourges.cefimtest.model;
 
 import jakarta.persistence.*;
 
@@ -27,6 +27,9 @@ public class Produit {
 
     @Column(name = "unitPrice")
     private double unitPrice;
+
+    @Column(name = "category_id")
+    private int categoryId;
 
     public String getName() {
         return name;

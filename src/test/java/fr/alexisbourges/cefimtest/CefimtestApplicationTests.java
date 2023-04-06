@@ -1,7 +1,7 @@
 package fr.alexisbourges.cefimtest;
 
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
-import fr.alexisbourges.cefimtest.feature.database.Produit;
+import fr.alexisbourges.cefimtest.model.Produit;
 import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
 import fr.alexisbourges.cefimtest.feature.database.ProduitWithPriceDto;
 import jakarta.persistence.EntityManager;
@@ -127,9 +127,49 @@ class CefimtestApplicationTests {
 	void testGetIphone(){
 		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
 
-		ProduitWithPriceDto oneProduct = databaseService.getOneProduct(p1.getId());
+		ProduitWithPriceDto oneProduct = databaseService.getOneProductById(p1.getId());
 
 		assert oneProduct.equals(p1);
+	}
+
+	@Test
+	void testGetIphoneByName(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+		ProduitWithPriceDto p2 = new ProduitWithPriceDto(3, "iphone 13", "portable", BigDecimal.valueOf(1200.0));
+
+		List<ProduitWithPriceDto> listProduits = databaseService.getProductByName("iphone");
+
+		assert listProduits.stream().allMatch(produit -> produit.equals(p1) || produit.equals(p2));
+	}
+
+	@Test
+	void testGetIphoneByCategory(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+		ProduitWithPriceDto p2 = new ProduitWithPriceDto(3, "iphone 13", "portable", BigDecimal.valueOf(1200.0));
+
+		List<ProduitWithPriceDto> listProduits = databaseService.getProductByCategory("Mobile");
+
+		assert listProduits.stream().allMatch(produit -> produit.equals(p1) || produit.equals(p2));
+	}
+
+	@Test
+	void testGetIphoneEntitiesByName(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+		ProduitWithPriceDto p2 = new ProduitWithPriceDto(3, "iphone 13", "portable", BigDecimal.valueOf(1200.0));
+
+		List<Produit> listProduits = databaseService.getProductEntityByName("iphone");
+
+		assert listProduits.stream().allMatch(produit -> testEquality(produit, p1) || testEquality(produit, p2));
+	}
+
+	@Test
+	void testGetIphoneEntitiesByCategoryName(){
+		ProduitWithPriceDto p1 = new ProduitWithPriceDto(1, "iphone", "portable", BigDecimal.valueOf(1000.0));
+		ProduitWithPriceDto p2 = new ProduitWithPriceDto(3, "iphone 13", "portable", BigDecimal.valueOf(1200.0));
+
+		List<Produit> listProduits = databaseService.getProductEntityByCategoryName("mobile");
+
+		assert listProduits.stream().allMatch(produit -> testEquality(produit, p1) || testEquality(produit, p2));
 	}
 
 	@Test

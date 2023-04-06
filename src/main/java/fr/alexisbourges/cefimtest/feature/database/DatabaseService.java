@@ -1,5 +1,7 @@
 package fr.alexisbourges.cefimtest.feature.database;
 
+import fr.alexisbourges.cefimtest.model.ProductRepository;
+import fr.alexisbourges.cefimtest.model.Produit;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
@@ -7,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 // Bien penser à annoter votre classe de Service par l'annotation @Service (dans les docs, elle est identique à @Component si vous la voyez)
 @Service
@@ -69,7 +70,7 @@ public class DatabaseService {
         return productRepository.findAll();
     }
 
-    public ProduitWithPriceDto getOneProduct(Integer id) {
+    public ProduitWithPriceDto getOneProductById(Integer id) {
         // Requete identique à notre méthode getListProduct, avec le champ unit_price en plus
         String request = "select product_id, name, description, unit_price from produit where product_id = :productId";
         Query query = entityManager.createNativeQuery(request, Tuple.class)
@@ -81,10 +82,40 @@ public class DatabaseService {
         return new ProduitWithPriceDto(result);
     }
 
+    public List<ProduitWithPriceDto> getProductByName(String name) {
+        String request = "select product_id, name, description, unit_price from produit where name LIKE :name";
+        Query query = entityManager.createNativeQuery(request, Tuple.class)
+                // setParameter : Permet de remplacer un paramètre nommé (1er paramètre) dans la requête par la valeur du 2e paramètre (Ici productId)
+                // Dans ma requête, un paramètre est identifié par le prefix ":"
+                .setParameter("name", "%"+name+"%");
+        List<Tuple> resultList = (List<Tuple>) query.getResultList();
+        // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
+        return resultList.stream().map(ProduitWithPriceDto::new).toList();
+    }
+
     public Produit getOneProductEntity(Integer id) {
         // 2 façons de récupérer un élément par son ID
         // findById : renvoie un optionnel pour gérer le cas où l'element n'existe pas (ici on renvoie null)
         // getReferenceById : renvoie le produit et lève une exception dans le cas où il n'existe pas
         return productRepository.findById(id).orElse(null);
+    }
+
+    public List<Produit> getProductEntityByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<ProduitWithPriceDto> getProductByCategory(String categoryName) {
+        String request = "select product_id, name, description, unit_price from produit inner join category on category.category_id = produit.category_id where category_name = :categoryName";
+        Query query = entityManager.createNativeQuery(request, Tuple.class)
+                // setParameter : Permet de remplacer un paramètre nommé (1er paramètre) dans la requête par la valeur du 2e paramètre (Ici productId)
+                // Dans ma requête, un paramètre est identifié par le prefix ":"
+                .setParameter("categoryName", categoryName);
+        List<Tuple> resultList = (List<Tuple>) query.getResultList();
+        // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
+        return resultList.stream().map(ProduitWithPriceDto::new).toList();
+    }
+
+    public List<Produit> getProductEntityByCategoryName(String name) {
+        return productRepository.findByCategoryName(name);
     }
 }
