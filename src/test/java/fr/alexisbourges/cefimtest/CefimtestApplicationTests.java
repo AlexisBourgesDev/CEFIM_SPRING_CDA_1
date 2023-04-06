@@ -2,12 +2,11 @@ package fr.alexisbourges.cefimtest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.alexisbourges.cefimtest.feature.database.DatabaseService;
-import fr.alexisbourges.cefimtest.feature.rayon.RayonService;
-import fr.alexisbourges.cefimtest.model.Produit;
 import fr.alexisbourges.cefimtest.feature.database.ProduitDto;
 import fr.alexisbourges.cefimtest.feature.database.ProduitWithPriceDto;
-import fr.alexisbourges.cefimtest.model.Rayon;
+import fr.alexisbourges.cefimtest.model.Produit;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
@@ -44,7 +42,7 @@ class CefimtestApplicationTests {
 	@Autowired
 	private DatabaseService databaseService;
 	@Autowired
-	private RayonService rayonService;
+	private ObjectMapper objectMapper;
 
 	// LOGGER pour écrire des logs (bien prendre le package slf4j)
 	private Logger logger = LoggerFactory.getLogger(CefimtestApplicationTests.class);
@@ -235,8 +233,25 @@ class CefimtestApplicationTests {
 	}
 
 	@Test
-	void testRayonInsert() throws Exception{
-		rayonService.saveRayon(new Rayon("Fruits"));
+	void testUpdateProduct() throws Exception{
+
+		Assertions.assertNull(databaseService.getOneProductById(2).getDescription());
+
+		Map<String, String> listFields = new HashMap<>(){{
+			put("description", "console");
+		}};
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders
+				.put("/api/product/2")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(listFields));
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isOk();
+
+		JsonNode resultat = objectMapper.readTree(mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus)
+				.andReturn().getResponse().getContentAsString());
+
+		Assertions.assertEquals(resultat.get("description").asText(), listFields.get("description"));
 	}
 
 
