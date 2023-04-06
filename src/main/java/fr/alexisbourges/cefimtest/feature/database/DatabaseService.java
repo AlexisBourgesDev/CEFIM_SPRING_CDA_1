@@ -85,8 +85,7 @@ public class DatabaseService {
     public List<ProduitWithPriceDto> getProductByName(String name) {
         String request = "select product_id, name, description, unit_price from produit where name LIKE :name";
         Query query = entityManager.createNativeQuery(request, Tuple.class)
-                // setParameter : Permet de remplacer un paramètre nommé (1er paramètre) dans la requête par la valeur du 2e paramètre (Ici productId)
-                // Dans ma requête, un paramètre est identifié par le prefix ":"
+                // Concaténation de % au début et à la fin de notre nom pour indiquer qu'il peut être n'importe où dans notre champ
                 .setParameter("name", "%"+name+"%");
         List<Tuple> resultList = (List<Tuple>) query.getResultList();
         // IDEM méthode getListProduct, sauf qu'on va créer des ProduitWithPriceDto pour stocker le unit_price de notre requête
