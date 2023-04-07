@@ -17,3 +17,11 @@ Point techniques :
 Utiliser @RequestBody, @RequestParam et @PathVariable dans les points d'API 
 
 Ajouter @Transactional sur la classe de tests pour rollback les modifications une fois le test passé
+
+
+07/04 09h30 : 
+
+Ajouter la contrainte lorsqu'on récupère la liste de produits avec le nom, exclure le produit courant (via le productId)
+
+Gérer les cas d'erreurs via ResponseEntity sur tous les points d'API
+

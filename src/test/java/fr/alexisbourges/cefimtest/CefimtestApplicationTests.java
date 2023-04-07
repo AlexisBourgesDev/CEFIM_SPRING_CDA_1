@@ -239,6 +239,7 @@ class CefimtestApplicationTests {
 
 		Map<String, String> listFields = new HashMap<>(){{
 			put("description", "console");
+			put("name", "Playstation 5");
 		}};
 
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -252,7 +253,43 @@ class CefimtestApplicationTests {
 				.andReturn().getResponse().getContentAsString());
 
 		Assertions.assertEquals(resultat.get("description").asText(), listFields.get("description"));
+		Assertions.assertEquals(resultat.get("name").asText(), listFields.get("name"));
 	}
+
+	@Test
+	void testUpdateProductWithWrongId() throws Exception{
+		Map<String, String> listFields = new HashMap<>(){{
+			put("description", "console");
+			put("name", "Playstation 5");
+		}};
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders
+				.put("/api/product/10")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(listFields));
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isNotFound();
+
+		mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus);
+	}
+
+	@Test
+	void testUpdateProductWithExistingName() throws Exception{
+		Map<String, String> listFields = new HashMap<>(){{
+			put("description", "console");
+			put("name", "iphone");
+		}};
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders
+				.put("/api/product/2")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(listFields));
+		ResultMatcher resultStatus = MockMvcResultMatchers.status().isConflict();
+
+		mockMvc.perform(requestBuilder)
+				.andExpect(resultStatus);
+	}
+
 
 
 	@Test
